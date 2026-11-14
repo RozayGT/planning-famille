@@ -79,7 +79,7 @@ const CONFIG={
 const CFG={apiKey:"AIzaSyCSh_7tab97_q3DCPqXaOyBo3Kk_nw_1gY",authDomain:"planning-famille-1a19c.firebaseapp.com",databaseURL:"https://planning-famille-1a19c-default-rtdb.europe-west1.firebasedatabase.app",projectId:"planning-famille-1a19c",storageBucket:"planning-famille-1a19c.firebasestorage.app",messagingSenderId:"494223699351",appId:"1:494223699351:web:1b4ada0197b871e166a8d2"};
 /* ============================================================ */
 
-const P={'TRA':['#2563eb','#fff','Travail'],'REP':['#cbd5e1','#1e293b','Repos'],'CON':['#bae6fd','#075985','Congé'],'AST':['#16a34a','#fff','Astreinte'],'NUIT':['#3730a3','#fff','Nuit'],
+const P={'TRA':['#2563eb','#fff','Travail'],'REP':['#cbd5e1','#1e293b','Repos'],'CP':['#bae6fd','#075985','Congés payés'],'AST':['#16a34a','#fff','Astreinte'],'NUIT':['#3730a3','#fff','Nuit'],
 'ÉCO':['#facc15','#422006','École'],'VAC':['#a855f7','#fff','Vacances scolaires'],'CAN':['#fed7aa','#9a3412','Cantine / centre de loisirs'],'GAR':['#f9a8d4','#831843','Garde / nounou'],
 'MÉD':['#dc2626','#fff','Médecin'],'RDV':['#d6b38a','#4a2c0a','Rendez-vous'],'SPO':['#0d9488','#fff','Sport / activité'],'SOR':['#a3e635','#1a2e05','Sortie'],
 'VOY':['#0ea5e9','#fff','Voyage'],'ANN':['#db2777','#fff','Anniversaire'],'F':['#ffc878','#8a4b00','Jour férié']};
@@ -91,7 +91,7 @@ let data={},mo=new Date().getFullYear()==YR?new Date().getMonth():0,vw='plan',se
 const iso=(m,d)=>`${YR}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
 const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function dflt(k){return HOL.includes(k)?['F','']:['','']}
-function get(a,k){const v=(data[a]||{})[k];if(v)return v;return dflt(k)}
+function get(a,k){const v=(data[a]||{})[k];if(v)return v.map(x=>x==='CON'?'CP':x);return dflt(k)}
 function chip(c,cls,a,k,l){const h=`data-s="${a}|${k}|${l}" onclick="openS('${a}','${k}',${l})"`;if(!c)return`<span class="${cls} e" ${h}></span>`;const p=P[c]||['#ddd','#000'];return`<span class="${cls} k${c}" ${h} style="--cc:${p[0]};background:${p[0]};color:${p[1]}">${esc(c)}</span>`}
 const agOf=id=>AG.find(x=>x[0]==id),colA=id=>(agOf(id)||[0,0,'#6366f1'])[2];
 function name(a){return esc(a[1])}
@@ -144,11 +144,11 @@ function goMo(i,smooth){const m=moStarts();if(!m||!m.s[i]&&m.s[i]!==0)return;mo=
 const dk=()=>document.documentElement.dataset.theme==='dark';
 function tc(k){const p=P[k];return dk()||p[1]==='#fff'?p[0]:p[1]}
 function cnt(){let o='';
-for(const a of AG){const c={};let con=0,tot=0;for(let m=0;m<12;m++)for(let d=1;d<=new Date(YR,m+1,0).getDate();d++){const v=get(a[0],iso(m,d));v.forEach(x=>x&&x!=='F'&&(c[x]=(c[x]||0)+1));if(v.includes('CON'))con++;if(v.some(x=>x&&x!=='F'))tot++}
+for(const a of AG){const c={};let con=0,tot=0;for(let m=0;m<12;m++)for(let d=1;d<=new Date(YR,m+1,0).getDate();d++){const v=get(a[0],iso(m,d));v.forEach(x=>x&&x!=='F'&&(c[x]=(c[x]||0)+1));if(v.includes('CP'))con++;if(v.some(x=>x&&x!=='F'))tot++}
 const t=+a[3]||0;let top='';
-if(t){const r=t-con,p=Math.max(0,Math.min(100,r/t*100));top=`<div class="tiles t4"><div class="tile" style="--c:${r<0?'var(--neg)':tc('CON')}"><div class="tl"><i></i><span>Congés restants</span></div><div class="tv ${r<0?'neg':''}">${r}<small>/ ${t}</small></div><div class="bar"><i style="width:${p}%"></i></div></div><div class="tile" style="--c:${tc('CON')}"><div class="tl"><i></i><span>Congés posés</span></div><div class="tv">${con}<small>j</small></div></div></div>`}
-const tl=Object.keys(P).filter(k=>c[k]&&!(t&&k==='CON')).map(k=>`<div class="tile" style="--c:${tc(k)}"><div class="tl"><i></i><span>${esc(P[k][2])}</span></div><div class="tv">${c[k]}<small>j</small></div></div>`).join('');
-o+=`<div class="card"><h3><span class="av" style="background:${a[2]}">${iniA(a[0])}</span><span>${name(a)}<div class="sum">${tot} jour${tot>1?'s':''} renseigné${tot>1?'s':''} en ${YR}</div></span></h3>${top}<div class="tiles">${tl||'<div class="he" style="grid-column:1/-1">Aucun code posé pour le moment</div>'}</div></div>`}
+if(t){const r=t-con,p=Math.max(0,Math.min(100,r/t*100));top=`<div class="tiles t4"><div class="tile" style="--c:${r<0?'var(--neg)':tc('CP')}"><div class="tl"><i></i><span>Congés restants</span></div><div class="tv ${r<0?'neg':''}">${r}<small>/ ${t}</small></div><div class="bar"><i style="width:${p}%"></i></div></div><div class="tile" style="--c:${tc('CP')}"><div class="tl"><i></i><span>Congés posés</span></div><div class="tv">${con}<small>j</small></div></div></div>`}
+const tl=Object.keys(P).filter(k=>c[k]&&!(t&&k==='CP')).map(k=>`<div class="tile" style="--c:${tc(k)}"><div class="tl"><i></i><span>${esc(P[k][2])}</span></div><div class="tv">${c[k]}<small>j</small></div></div>`).join('');
+o+=`<div class="card"><h3><span class="av" style="background:${a[2]}">${iniA(a[0])}</span><span>${name(a)}<div class="sum">${tot} jour${tot>1?'s':''} renseigné${tot>1?'s':''} en ${YR}</div></span></h3>${top}<div class="tiles">${tl||(t&&con?'':'<div class="he" style="grid-column:1/-1">Aucun code posé pour le moment</div>')}</div></div>`}
 $('main').innerHTML=`<div class="cnt">${o}</div>`}
 
 let yAg=null,ySel=null;
@@ -236,7 +236,7 @@ function meB(){const b=$('mebtn');if(!b)return;if(me){b.textContent=iniA(me);b.s
 function renderH(){meB();const el=$('hist');if(vw!=='plan'){el.innerHTML='';return}
  const top=`<div class="hh"><b>Historique</b>${H.some(e=>!HID.includes(e.id))?'<a onclick="clrH()">Tout effacer</a>':''}</div>`;
  const V=H.filter(e=>!HID.includes(e.id));if(!V.length){el.innerHTML=top+'<div class="he">Aucune modification pour le moment</div>';return}
- el.innerHTML=top+V.slice(0,60).map(e=>{const p=P[e.c],cd=e.c?`<span class="cd" style="background:${p?p[0]:'#ddd'};color:${p?p[1]:'#000'}">${esc(e.c)}</span>`:'';
+ el.innerHTML=top+V.slice(0,60).map(e=>{const ec=e.c==='CON'?'CP':e.c,p=P[ec],cd=ec?`<span class="cd" style="background:${p?p[0]:'#ddd'};color:${p?p[1]:'#000'}">${esc(ec)}</span>`:'';
   const qui=e.by?esc(pre(e.by)):'Quelqu’un',pour=e.by===e.ag?'pour soi':'pour '+esc(pre(e.ag)),per=e.d0===e.d1?'le '+fd(e.d0):'du '+fd(e.d0)+' au '+fd(e.d1);
   const act=e.cp?`a copié la semaine ${e.sw?wnum(e.sw)+' ':''}de ${esc(pre(e.cp))} sur la ${wnum(wkey(wkS(e.d0)))}`:e.c?`a posé ${cd}`:'a effacé';
   return`<div class="hi"><span class="av" style="${e.by?'background:'+colA(e.by):''}">${e.by?iniA(e.by):'?'}</span><div class="tx"><b>${qui}</b> ${act} ${pour} ${per}${e.l?' (ligne 2)':''}<small>${ago(e.t)}</small></div><button class="x" onclick="delH('${e.id}')" aria-label="Masquer">×</button></div>`}).join('')}

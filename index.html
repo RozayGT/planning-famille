@@ -79,7 +79,7 @@ const CONFIG={
 const CFG={apiKey:"AIzaSyCSh_7tab97_q3DCPqXaOyBo3Kk_nw_1gY",authDomain:"planning-famille-1a19c.firebaseapp.com",databaseURL:"https://planning-famille-1a19c-default-rtdb.europe-west1.firebasedatabase.app",projectId:"planning-famille-1a19c",storageBucket:"planning-famille-1a19c.firebasestorage.app",messagingSenderId:"494223699351",appId:"1:494223699351:web:1b4ada0197b871e166a8d2"};
 /* ============================================================ */
 
-const P={'TRA':['#2563eb','#fff','Travail'],'TÉL':['#818cf8','#fff','Télétravail'],'REP':['#cbd5e1','#1e293b','Repos'],'CON':['#16a34a','#fff','Congé'],'AST':['#14532d','#fff','Astreinte'],'NUIT':['#3730a3','#fff','Nuit'],
+const P={'TRA':['#2563eb','#fff','Travail'],'REP':['#cbd5e1','#1e293b','Repos'],'CON':['#bae6fd','#075985','Congé'],'AST':['#16a34a','#fff','Astreinte'],'NUIT':['#3730a3','#fff','Nuit'],
 'ÉCO':['#facc15','#422006','École'],'VAC':['#a855f7','#fff','Vacances scolaires'],'CAN':['#fed7aa','#9a3412','Cantine / centre de loisirs'],'GAR':['#f9a8d4','#831843','Garde / nounou'],
 'MÉD':['#dc2626','#fff','Médecin'],'RDV':['#d6b38a','#4a2c0a','Rendez-vous'],'SPO':['#0d9488','#fff','Sport / activité'],'SOR':['#a3e635','#1a2e05','Sortie'],
 'VOY':['#0ea5e9','#fff','Voyage'],'ANN':['#db2777','#fff','Anniversaire'],'F':['#ffc878','#8a4b00','Jour férié']};
@@ -146,7 +146,7 @@ function tc(k){const p=P[k];return dk()||p[1]==='#fff'?p[0]:p[1]}
 function cnt(){let o='';
 for(const a of AG){const c={};let con=0,tot=0;for(let m=0;m<12;m++)for(let d=1;d<=new Date(YR,m+1,0).getDate();d++){const v=get(a[0],iso(m,d));v.forEach(x=>x&&x!=='F'&&(c[x]=(c[x]||0)+1));if(v.includes('CON'))con++;if(v.some(x=>x&&x!=='F'))tot++}
 const t=+a[3]||0;let top='';
-if(t){const r=t-con,p=Math.max(0,Math.min(100,r/t*100));top=`<div class="tiles t4"><div class="tile" style="--c:${r<0?'var(--neg)':P.CON[0]}"><div class="tl"><i></i><span>Congés restants</span></div><div class="tv ${r<0?'neg':''}">${r}<small>/ ${t}</small></div><div class="bar"><i style="width:${p}%"></i></div></div><div class="tile" style="--c:${P.CON[0]}"><div class="tl"><i></i><span>Congés posés</span></div><div class="tv">${con}<small>j</small></div></div></div>`}
+if(t){const r=t-con,p=Math.max(0,Math.min(100,r/t*100));top=`<div class="tiles t4"><div class="tile" style="--c:${r<0?'var(--neg)':tc('CON')}"><div class="tl"><i></i><span>Congés restants</span></div><div class="tv ${r<0?'neg':''}">${r}<small>/ ${t}</small></div><div class="bar"><i style="width:${p}%"></i></div></div><div class="tile" style="--c:${tc('CON')}"><div class="tl"><i></i><span>Congés posés</span></div><div class="tv">${con}<small>j</small></div></div></div>`}
 const tl=Object.keys(P).filter(k=>c[k]&&!(t&&k==='CON')).map(k=>`<div class="tile" style="--c:${tc(k)}"><div class="tl"><i></i><span>${esc(P[k][2])}</span></div><div class="tv">${c[k]}<small>j</small></div></div>`).join('');
 o+=`<div class="card"><h3><span class="av" style="background:${a[2]}">${iniA(a[0])}</span><span>${name(a)}<div class="sum">${tot} jour${tot>1?'s':''} renseigné${tot>1?'s':''} en ${YR}</div></span></h3>${top}<div class="tiles">${tl||'<div class="he" style="grid-column:1/-1">Aucun code posé pour le moment</div>'}</div></div>`}
 $('main').innerHTML=`<div class="cnt">${o}</div>`}

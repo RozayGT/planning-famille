@@ -96,7 +96,7 @@ function chip(c,cls,a,k,l){const h=`data-s="${a}|${k}|${l}" onclick="openS('${a}
 const agOf=id=>AG.find(x=>x[0]==id),colA=id=>(agOf(id)||[0,0,'#6366f1'])[2];
 function name(a){return esc(a[1])}
 function ctrTab(sm){const t=$('tabs'),on=t&&t.querySelector('button.on');if(on&&t.scrollWidth>t.clientWidth){const x=on.offsetLeft-(t.clientWidth-on.offsetWidth)/2;if(sm)t.scrollTo({left:x,behavior:'smooth'});else t.scrollLeft=x}}
-function tabs(){setTimeout(ctrTab,0);$('tabs').style.display=vw==='year'?'none':'';$('tabs').innerHTML=MOIS.map((m,i)=>`<button class="${i==mo?'on':''}" onclick="if(vw==='plan')goMo(${i},true);else{mo=${i};draw()}">${m.slice(0,4)}${m.length>4?'.':''}</button>`).join('');$('view').innerHTML=[['plan','Planning'],['year','Mon année'],['cnt','Compteurs'],['leg','Légende']].map(([k,l])=>`<button class="${vw==k?'on':''}" onclick="const pv=vw;vw='${k}';draw();if(vw==='plan'&&pv!=='plan')setTimeout(()=>goMo(mo),0)">${l}</button>`).join('')}
+function tabs(){setTimeout(ctrTab,0);$('tabs').style.display=vw==='year'?'none':'';$('tabs').innerHTML=MOIS.map((m,i)=>`<button class="${i==mo?'on':''}" onclick="if(vw==='plan')goMo(${i},true);else{mo=${i};draw()}">${m.slice(0,4)}${m.length>4?'.':''}</button>`).join('');$('view').innerHTML=[['plan','Planning'],['year','Mon année'],['leg','Légende']].map(([k,l])=>`<button class="${vw==k?'on':''}" onclick="const pv=vw;vw='${k}';draw();if(vw==='plan'&&pv!=='plan')setTimeout(()=>goMo(mo),0)">${l}</button>`).join('')}
 // Vacances scolaires officielles [début (samedi), dernier jour avant la reprise]. Les ponts ne sont pas comptés.
 const VCOM=[['2026-12-19','2027-01-03'],['2027-07-03','2027-09-01'],['2027-10-23','2027-11-07'],['2027-12-18','2028-01-02'],['2028-07-05','2028-08-31']];
 const VZ={A:[['2027-02-13','2027-02-28'],['2027-04-10','2027-04-25'],['2028-02-19','2028-03-05'],['2028-04-22','2028-05-08']],
@@ -181,7 +181,6 @@ const TU=[['👋','Bienvenue','Le planning de la famille, partagé en direct sur
 ['✏️','Saisir un code','Touchez une case : en haut la ligne 1, en bas la ligne 2 (ex. CAN sous ÉCO). « Jusqu’au » remplit plusieurs jours d’un coup. ↶ Annuler en cas d’erreur.'],
 ['📋','Notes et semaines types','Ajoutez une note 💬 sur un jour. « Copier la semaine » recopie une semaine sur d’autres semaines cochées, pour vous ou pour quelqu’un d’autre.'],
 ['🗓️','Mon année','Toute l’année d’une personne sur un écran. Touchez un jour pour voir le détail.'],
-['📊','Compteurs','Les congés posés et restants, et le nombre de jours de chaque code, pour chacun.'],
 ['🔔','Historique et options','En bas : qui a modifié quoi. En haut : ★ votre ligne en avant, 🌙 le thème, ? ce tuto, votre pastille pour changer de prénom.'],
 ['🖥️','Sur PC','Le bouton ⛶ en haut à droite passe l’appli en plein écran. Échap ou ⛶ pour revenir.']];
 let tuI=0;
@@ -257,7 +256,7 @@ document.addEventListener('fullscreenchange',fsC);
 document.addEventListener('webkitfullscreenchange',fsC);
 function swY(){YR=YR===2027?2028:2027;try{localStorage.setItem('fam_yr',YR)}catch(e){}mo=new Date().getFullYear()==YR?new Date().getMonth():0;ySel=null;yrT();draw();setTimeout(goToday,50);$('ttl').classList.remove('pop');void $('ttl').offsetWidth;$('ttl').classList.add('pop')}
 function yrT(){$('ttn').innerHTML='<span class="tp">Planning </span>'+esc(FAM);$('yrt').textContent=YR;document.querySelectorAll('.yrn').forEach(e=>e.textContent=TTL+' '+YR);document.title=TTL+' '+YR}
-function draw(){const w=document.querySelector('.wrap'),sx=w?w.scrollLeft:0,sy=w?w.scrollTop:0,pm=draw.m;draw.m=vw+YR;tabs();vw=='plan'?plan():vw=='cnt'?cnt():vw=='year'?year():leg();renderH();const w2=document.querySelector('.wrap');if(w2&&pm===draw.m){w2.style.scrollBehavior='auto';w2.scrollLeft=sx;w2.scrollTop=sy;w2.style.scrollBehavior=''}}
+function draw(){const w=document.querySelector('.wrap'),sx=w?w.scrollLeft:0,sy=w?w.scrollTop:0,pm=draw.m;draw.m=vw+YR;tabs();vw=='plan'?plan():vw=='year'?year():leg();renderH();const w2=document.querySelector('.wrap');if(w2&&pm===draw.m){w2.style.scrollBehavior='auto';w2.scrollLeft=sx;w2.scrollTop=sy;w2.style.scrollBehavior=''}}
 function hideUd(){$('ud').classList.remove('o');clearTimeout(udT)}
 function openS(a,k,l){hideUd();if(ro){$('st').textContent='Lecture seule : vous ne pouvez pas modifier ce planning.';return}if(l!==undefined)line=l;sel=[a,k];const ag=agOf(a),d=+k.slice(8),dt=wkS(k);
 $('sh').innerHTML=`<div class="tt"><span>${name(ag)} · ${JS[dt.getDay()]}. ${d} ${MOIS[+k.slice(5,7)-1]}</span><button onclick="closeS()">×</button></div><div class="note"><input id="nti" maxlength="120" placeholder="💬 Ajouter une note pour ce jour…" value="${esc(NT[a+'|'+k]||'')}" onkeydown="if(event.key==='Enter'){this.blur()}" onblur="saveNote()"><small id="ntb"></small></div>
